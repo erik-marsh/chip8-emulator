@@ -172,8 +172,7 @@ void Core::loadProgram()
 	}
 }
 
-// temporary so i can test behavior
-void Core::opcode()//uint16_t opcode)
+void Core::opcode()
 {
 	uint16_t opcode = memory[programCounter] << 8 | memory[programCounter + 1];
 	int regX = (opcode & 0x0F00) >> 8; // opcodes which specify V_x will always specify it in the low nibble of the high byte

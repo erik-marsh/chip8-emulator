@@ -34,7 +34,6 @@ private:
 	olcNoiseMaker<short>* sound;
 
 	void updateFramebuffer(uint8_t xPos, uint8_t yPos, uint8_t height);
-	//bool isPixelDeactivated(uint16_t oldWord, uint16_t newWord, int xOffset);
 	bool isPixelDeactivated(uint8_t oldByte, uint8_t newByte);
 
 	double soundCallback(int nChannels, double deltaTime);
@@ -46,7 +45,7 @@ public:
 	~Core();
 
 	void loadProgram();
-	void opcode();//uint16_t opcode);
+	void opcode();
 	void draw();
 	void updateDelayTimer(double currTime);
 	void updateSoundTimer(double currTime);

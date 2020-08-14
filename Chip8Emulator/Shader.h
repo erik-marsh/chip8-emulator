@@ -9,7 +9,7 @@
 
     class Shader
     {
-    public: // TODO: change back later
+    private:
         unsigned int m_programID;
 
         std::string readFile(const char* filePath) const;

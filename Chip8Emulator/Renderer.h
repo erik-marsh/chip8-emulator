@@ -7,7 +7,6 @@
 class Renderer
 {
 private:
-	//uint8_t * m_drawMap;
 	Shader * m_shader;
 	unsigned int m_VBO;
 	unsigned int m_EBO;
