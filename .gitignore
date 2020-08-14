@@ -341,4 +341,4 @@ healthchecksdb
 
 
 # Misc additions
-Chip8Emulator/c8roms/
+Chip8Emulator/c8roms/*
