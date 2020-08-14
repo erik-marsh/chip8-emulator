@@ -157,7 +157,7 @@ Core::Core(GLFWwindow* context)
 	opcodeTable[0xE] = &Core::opcodeE;
 	opcodeTable[0xF] = &Core::opcodeF;
 
-	// initialize invalid opcodes to NOP
+	// initialize invalid subtable entries to NOP
 	for (int i = 0; i < 16; i++)
 	{
 		subtable8[i] = &Core::noOperation;
@@ -208,7 +208,7 @@ Core::~Core()
 
 void Core::loadProgram()
 {
-	std::ifstream file(".\\c8roms\\c8games\\MAZE", std::ios::binary);
+	std::ifstream file(".\\c8roms\\c8games\\PONG", std::ios::binary);
 	if (!file.is_open()) 
 	{
 		std::cout << "Failed to open ROM." << std::endl;
@@ -230,6 +230,8 @@ void Core::loadProgram()
 
 void Core::opcode()
 {
+	//log();
+
 	currOpcode = memory[programCounter] << 8 | memory[programCounter + 1];
 	currRegX = (currOpcode & 0x0F00) >> 8;
 	currRegY = (currOpcode & 0x00F0) >> 4;
@@ -238,245 +240,6 @@ void Core::opcode()
 	(this->*(opcodeTable[tableIndex]))();
 
 	programCounter += 2;
-
-	//uint16_t opcode = memory[programCounter] << 8 | memory[programCounter + 1];
-	//int regX = (opcode & 0x0F00) >> 8; // opcodes which specify V_x will always specify it in the low nibble of the high byte
-	//int regY = (opcode & 0x00F0) >> 4; // similarly, V_y will always be in the high nibble of the low byte
-	//uint16_t result = 0x00;
-
-	//switch (opcode & 0xF000)
-	//{
-	//// we ignore the 0nnn opcode
-	//case 0x0000:
-	//	if (opcode == 0x00E0) // CLS
-	//	{
-	//		for (int i = 0; i < 32 * 8; i++)
-	//		{
-	//			framebuffer[i] = 0x00;
-	//		}
-	//		draw();
-	//	}
-	//	if (opcode == 0x00EE) // RET
-	//	{
-	//		// Returns from subroutine
-	//		programCounter = stack[stackPointer];
-	//		stackPointer--;
-	//	}
-	//	break;
-	//case 0x1000: // 0x1nnn - JP nnn
-	//	// jump to address nnn
-	//	programCounter = opcode & 0x0FFF;
-	//	// do not update pc after this instruction
-	//	// you can do it by subtracting 2 and letting it add it back, which is kinda messy but works
-	//	programCounter -= 2;
-	//	break;
-	//case 0x2000: // 0x2nnn - CALL nnn
-	//	// call subroutine at address nnn
-	//	// TODO: check for stack under/overflow
-	//	stackPointer++;
-	//	stack[stackPointer] = programCounter; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//	programCounter = opcode & 0x0FFF;
-	//	programCounter -= 2; // similar to 0x1nnn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! or is it???????????????????
-	//	break;
-	//case 0x3000: // 0x3xkk - SE V_x, kk
-	//	// skips next inst if V_x == kk
-	//	if (registers[regX] == (opcode & 0x00FF))
-	//	{
-	//		programCounter += 2;
-	//	}
-	//	break;
-	//case 0x4000: // 0x4xkk - SNE V_x, kk
-	//	// skips next inst if V_x != kk
-	//	if (!(registers[regX] == (opcode & 0x00FF)))
-	//	{
-	//		programCounter += 2;
-	//	}
-	//	break;
-	//case 0x5000: // 0x5xy0 - SE V_x, V_y
-	//	// TODO: notify user if low nibble != 0x0
-	//	// Skip next inst if V_x == V_y
-	//	if (registers[regX] == registers[regY])
-	//	{
-	//		programCounter += 2;
-	//	}
-	//	break;
-	//case 0x6000: // 0x6xkk - LD V_x, kk
-	//	regX = (opcode & 0x0F00) >> 8;
-	//	registers[regX] = opcode & 0x00FF;
-	//	break;
-	//case 0x7000: // 0x7xkk - ADD V_x, kk
-	//	registers[regX] += opcode & 0x00FF;
-	//	break;
-	//case 0x8000: // bitwise operations + etc
-	//	switch (opcode & 0x000F)
-	//	{
-	//	case 0x0000: // 0x8xy0 - LD V_x, V_y
-	//		registers[regX] = registers[regY];
-	//		break;
-	//	case 0x0001: // 0x8xy1 - OR V_x, V_y
-	//		registers[regX] = registers[regX] | registers[regY];
-	//		break;
-	//	case 0x0002: // 0x8xy2 - AND V_x, V_y
-	//		registers[regX] = registers[regX] & registers[regY];
-	//		break;
-	//	case 0x0003: // 0x8xy3 - XOR V_x, V_y
-	//		registers[regX] = registers[regX] ^ registers[regY];
-	//		break;
-	//	case 0x0004: // 0x8xy4 - ADD V_x, V_y
-	//		result = registers[regX] + registers[regY];
-	//		if (result > 0x00FF)
-	//		{
-	//			registers[0x0F] = 0x01; // carry flag
-	//		}
-	//		else
-	//		{
-	//			registers[0x0F] = 0x00;
-	//		}
-	//		registers[regX] = static_cast<uint8_t>(result);
-	//		break;
-	//	case 0x0005: // 0x8xy5 - SUB V_x, V_y
-	//		if (registers[regX] > registers[regY])
-	//		{
-	//			registers[0x0F] = 0x01; // set V_F to the inverse of borrow
-	//		}
-	//		else
-	//		{
-	//			registers[0x0F] = 0x00;
-	//		}
-	//		registers[regX] = registers[regX] - registers[regY];
-	//		break;
-	//	case 0x0006: // 0x8xy6 - SHR V_x
-	//		if ((registers[regX] & 0x01) == 0x01)
-	//		{
-	//			registers[0x0F] = 0x01;
-	//		}
-	//		else
-	//		{
-	//			registers[0x0F] = 0x00;
-	//		}
-	//		registers[regX] = registers[regX] >> 1;
-	//		break;
-	//	case 0x0007: // 0x8xy7 - SUBN V_x, V_y
-	//		// subtract V_x FROM V_y (weird syntax)
-	//		if (registers[regY] > registers[regX])
-	//		{
-	//			registers[0x0F] = 0x01; // set V_F to the inverse of borrow
-	//		}
-	//		else
-	//		{
-	//			registers[0x0F] = 0x00;
-	//		}
-	//		registers[regX] = registers[regY] - registers[regX];
-	//		break;
-	//	case 0x000E: // 0x8yE - SHL Vx
-	//		if ((registers[regX] & 0x80) == 0x80)
-	//		{
-	//			registers[0x0F] = 0x01;
-	//		}
-	//		else
-	//		{
-	//			registers[0x0F] = 0x00;
-	//		}
-	//		registers[regX] = registers[regX] << 1;
-	//		break;
-	//	}
-	//	break;
-	//case 0x9000: // 0x9xy0 - SNE V_x, V_y
-	//	// TODO: notify user if low nibble != 0x0
-	//	if (!(registers[regX] == registers[regY]))
-	//	{
-	//		programCounter += 2;
-	//	}
-	//	break;
-	//case 0xA000: // 0xAnnn - LD I, nnn
-	//	indexRegister = opcode & 0x0FFF;
-	//	break;
-	//case 0xB000: // 0xBnnn - JP V_0, nnn
-	//	// jump to address nnn + V_0
-	//	programCounter = (opcode & 0x0FFF) + registers[0];
-	//	programCounter -= 2; // you know the drill
-	//	break;
-	//case 0xC000: // 0xCxkk - RND V_x, kk
-	//	// generate a random int from 0 to 255, then AND it with kk. store in V_x
-	//	result = static_cast<uint8_t>(distribution->operator()(*generator)); // ugly
-	//	registers[regX] = result & (opcode & 0x00FF);
-	//	break;
-	//case 0xD000: // 0xDxyn - DRW V_x, V_y, n
-	//	// draw an n-byte sprite at memory location I at (V_x, V_y)
-	//	// height (!!) of sprite is indicated by n
-	//	updateFramebuffer(registers[regX], registers[regY], opcode & 0x000F);
-	//	draw();
-	//	break;
-	//case 0xE000:
-	//	if ((opcode & 0x00FF) == 0x009E) // 0xEx9E - SKP V_x
-	//	{
-	//		// if keypress == Vx, skip next instruction
-	//		if (glfwGetKey(windowContext, KEY_MAP[registers[regX]]) == GLFW_PRESS)
-	//		{
-	//			programCounter += 2;
-	//		}
-	//	}
-	//	if ((opcode & 0x00FF) == 0x00A1) // 0xE0A1 - SKNP V_x
-	//	{
-	//		// if keypress != Vx, skip next instruction
-	//		if (glfwGetKey(windowContext, KEY_MAP[registers[regX]]) == GLFW_RELEASE)
-	//		{
-	//			programCounter += 2;
-	//		}
-	//	}
-	//	break;
-	//case 0xF000:
-	//	switch (opcode & 0x00FF)
-	//	{
-	//	case 0x0007: // 0xFx07 - LD V_x, DelayTimer
-	//		registers[regX] = delayTimer;
-	//		break;
-	//	case 0x000A: // 0xFx0A - LD V_x, Keypress
-	//		// blocks + waits for keypress
-	//		// there's a much more accurate/faithful way to do this (https://retrocomputing.stackexchange.com/questions/358/how-are-held-down-keys-handled-in-chip-8)
-	//		// but i don't feel like implementing it right now
-	//		isWaitingForInput = true;
-	//		break;
-	//	case 0x0015: // 0xFx15 - LD DelayTimer, V_x
-	//		delayTimer = registers[regX];
-	//		break;
-	//	case 0x0018: // 0xFx18 - LD SoundTimer, V_x
-	//		soundTimer = registers[regX];
-	//		break;
-	//	case 0x001E: // 0xFx1E - ADD I, V_x
-	//		indexRegister += registers[regX];
-	//		break;
-	//	case 0x0029: // 0xFx29 - LD F, V_x
-	//		// loads the location of the sprite for the number specified by V_x into I
-	//		// since every sprite is 5 bytes long, and fonts start at memory location 0x0000, we can do this
-	//		indexRegister = registers[regX] * 5;
-	//		break;
-	//	case 0x0033: // 0xFx33 - LD B, V_x
-	//		memory[indexRegister] = registers[regX] / 100;			 // 100s digit
-	//		memory[indexRegister + 1] = (registers[regX] / 10) % 10; //  10s digit
-	//		memory[indexRegister + 2] = registers[regX] % 10;		 //   1s digit
-	//		break;
-	//	case 0x0055: // 0xFx55 - LD [I], V_x
-	//		// stores registers V_0 to V_x into memory sequentially, starting at the address in [I]
-	//		// TODO: check if this is inclusive or exclusive
-	//		for (uint8_t i = 0x00; i < (regX + 1); i++)
-	//		{
-	//			memory[indexRegister + i] = registers[i];
-	//		}
-	//		break;
-	//	case 0x0065: // 0xFx65 - LD V_x, [I];
-	//		// reads into regsiters V_0 to V_x the memory values starting at address [I
-	//		// TODO: check if this is inclusive or exclusive
-	//		for (uint8_t i = 0x00; i < (regX + 1); i++)
-	//		{
-	//			registers[i] = memory[indexRegister + i];
-	//		}
-	//		break;
-	//	}
-	//	break;
-	//}
-
-	//programCounter += 2;
 }
 
 void Core::draw()
@@ -517,6 +280,19 @@ void Core::updateSoundTimer(double currTime)
 const bool Core::getIsWaitingForInput() const
 {
 	return isWaitingForInput;
+}
+
+void Core::log()
+{
+	std::cout << "OPCODE: " << std::hex << currOpcode << std::endl;
+	std::cout << "I: " << indexRegister << "\tPC: " << programCounter << "\tDT: " << delayTimer << "\tST: " << soundTimer << std::endl;
+	std::cout << "Registers: ";
+	for (int i = 0; i < 16; i++)
+	{
+		std::cout << registers[i] << "\t";
+	}
+	std::cout << std::endl;
+
 }
 
 void Core::noOperation()
@@ -814,3 +590,246 @@ void Core::opcodeFx65()
 		registers[i] = memory[indexRegister + i];
 	}
 }
+
+
+
+// old opcode func
+
+	//uint16_t opcode = memory[programCounter] << 8 | memory[programCounter + 1];
+	//int regX = (opcode & 0x0F00) >> 8; // opcodes which specify V_x will always specify it in the low nibble of the high byte
+	//int regY = (opcode & 0x00F0) >> 4; // similarly, V_y will always be in the high nibble of the low byte
+	//uint16_t result = 0x00;
+
+	//switch (opcode & 0xF000)
+	//{
+	//// we ignore the 0nnn opcode
+	//case 0x0000:
+	//	if (opcode == 0x00E0) // CLS
+	//	{
+	//		for (int i = 0; i < 32 * 8; i++)
+	//		{
+	//			framebuffer[i] = 0x00;
+	//		}
+	//		draw();
+	//	}
+	//	if (opcode == 0x00EE) // RET
+	//	{
+	//		// Returns from subroutine
+	//		programCounter = stack[stackPointer];
+	//		stackPointer--;
+	//	}
+	//	break;
+	//case 0x1000: // 0x1nnn - JP nnn
+	//	// jump to address nnn
+	//	programCounter = opcode & 0x0FFF;
+	//	// do not update pc after this instruction
+	//	// you can do it by subtracting 2 and letting it add it back, which is kinda messy but works
+	//	programCounter -= 2;
+	//	break;
+	//case 0x2000: // 0x2nnn - CALL nnn
+	//	// call subroutine at address nnn
+	//	// TODO: check for stack under/overflow
+	//	stackPointer++;
+	//	stack[stackPointer] = programCounter; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//	programCounter = opcode & 0x0FFF;
+	//	programCounter -= 2; // similar to 0x1nnn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! or is it???????????????????
+	//	break;
+	//case 0x3000: // 0x3xkk - SE V_x, kk
+	//	// skips next inst if V_x == kk
+	//	if (registers[regX] == (opcode & 0x00FF))
+	//	{
+	//		programCounter += 2;
+	//	}
+	//	break;
+	//case 0x4000: // 0x4xkk - SNE V_x, kk
+	//	// skips next inst if V_x != kk
+	//	if (!(registers[regX] == (opcode & 0x00FF)))
+	//	{
+	//		programCounter += 2;
+	//	}
+	//	break;
+	//case 0x5000: // 0x5xy0 - SE V_x, V_y
+	//	// TODO: notify user if low nibble != 0x0
+	//	// Skip next inst if V_x == V_y
+	//	if (registers[regX] == registers[regY])
+	//	{
+	//		programCounter += 2;
+	//	}
+	//	break;
+	//case 0x6000: // 0x6xkk - LD V_x, kk
+	//	regX = (opcode & 0x0F00) >> 8;
+	//	registers[regX] = opcode & 0x00FF;
+	//	break;
+	//case 0x7000: // 0x7xkk - ADD V_x, kk
+	//	registers[regX] += opcode & 0x00FF;
+	//	break;
+	//case 0x8000: // bitwise operations + etc
+	//	switch (opcode & 0x000F)
+	//	{
+	//	case 0x0000: // 0x8xy0 - LD V_x, V_y
+	//		registers[regX] = registers[regY];
+	//		break;
+	//	case 0x0001: // 0x8xy1 - OR V_x, V_y
+	//		registers[regX] = registers[regX] | registers[regY];
+	//		break;
+	//	case 0x0002: // 0x8xy2 - AND V_x, V_y
+	//		registers[regX] = registers[regX] & registers[regY];
+	//		break;
+	//	case 0x0003: // 0x8xy3 - XOR V_x, V_y
+	//		registers[regX] = registers[regX] ^ registers[regY];
+	//		break;
+	//	case 0x0004: // 0x8xy4 - ADD V_x, V_y
+	//		result = registers[regX] + registers[regY];
+	//		if (result > 0x00FF)
+	//		{
+	//			registers[0x0F] = 0x01; // carry flag
+	//		}
+	//		else
+	//		{
+	//			registers[0x0F] = 0x00;
+	//		}
+	//		registers[regX] = static_cast<uint8_t>(result);
+	//		break;
+	//	case 0x0005: // 0x8xy5 - SUB V_x, V_y
+	//		if (registers[regX] > registers[regY])
+	//		{
+	//			registers[0x0F] = 0x01; // set V_F to the inverse of borrow
+	//		}
+	//		else
+	//		{
+	//			registers[0x0F] = 0x00;
+	//		}
+	//		registers[regX] = registers[regX] - registers[regY];
+	//		break;
+	//	case 0x0006: // 0x8xy6 - SHR V_x
+	//		if ((registers[regX] & 0x01) == 0x01)
+	//		{
+	//			registers[0x0F] = 0x01;
+	//		}
+	//		else
+	//		{
+	//			registers[0x0F] = 0x00;
+	//		}
+	//		registers[regX] = registers[regX] >> 1;
+	//		break;
+	//	case 0x0007: // 0x8xy7 - SUBN V_x, V_y
+	//		// subtract V_x FROM V_y (weird syntax)
+	//		if (registers[regY] > registers[regX])
+	//		{
+	//			registers[0x0F] = 0x01; // set V_F to the inverse of borrow
+	//		}
+	//		else
+	//		{
+	//			registers[0x0F] = 0x00;
+	//		}
+	//		registers[regX] = registers[regY] - registers[regX];
+	//		break;
+	//	case 0x000E: // 0x8yE - SHL Vx
+	//		if ((registers[regX] & 0x80) == 0x80)
+	//		{
+	//			registers[0x0F] = 0x01;
+	//		}
+	//		else
+	//		{
+	//			registers[0x0F] = 0x00;
+	//		}
+	//		registers[regX] = registers[regX] << 1;
+	//		break;
+	//	}
+	//	break;
+	//case 0x9000: // 0x9xy0 - SNE V_x, V_y
+	//	// TODO: notify user if low nibble != 0x0
+	//	if (!(registers[regX] == registers[regY]))
+	//	{
+	//		programCounter += 2;
+	//	}
+	//	break;
+	//case 0xA000: // 0xAnnn - LD I, nnn
+	//	indexRegister = opcode & 0x0FFF;
+	//	break;
+	//case 0xB000: // 0xBnnn - JP V_0, nnn
+	//	// jump to address nnn + V_0
+	//	programCounter = (opcode & 0x0FFF) + registers[0];
+	//	programCounter -= 2; // you know the drill
+	//	break;
+	//case 0xC000: // 0xCxkk - RND V_x, kk
+	//	// generate a random int from 0 to 255, then AND it with kk. store in V_x
+	//	result = static_cast<uint8_t>(distribution->operator()(*generator)); // ugly
+	//	registers[regX] = result & (opcode & 0x00FF);
+	//	break;
+	//case 0xD000: // 0xDxyn - DRW V_x, V_y, n
+	//	// draw an n-byte sprite at memory location I at (V_x, V_y)
+	//	// height (!!) of sprite is indicated by n
+	//	updateFramebuffer(registers[regX], registers[regY], opcode & 0x000F);
+	//	draw();
+	//	break;
+	//case 0xE000:
+	//	if ((opcode & 0x00FF) == 0x009E) // 0xEx9E - SKP V_x
+	//	{
+	//		// if keypress == Vx, skip next instruction
+	//		if (glfwGetKey(windowContext, KEY_MAP[registers[regX]]) == GLFW_PRESS)
+	//		{
+	//			programCounter += 2;
+	//		}
+	//	}
+	//	if ((opcode & 0x00FF) == 0x00A1) // 0xE0A1 - SKNP V_x
+	//	{
+	//		// if keypress != Vx, skip next instruction
+	//		if (glfwGetKey(windowContext, KEY_MAP[registers[regX]]) == GLFW_RELEASE)
+	//		{
+	//			programCounter += 2;
+	//		}
+	//	}
+	//	break;
+	//case 0xF000:
+	//	switch (opcode & 0x00FF)
+	//	{
+	//	case 0x0007: // 0xFx07 - LD V_x, DelayTimer
+	//		registers[regX] = delayTimer;
+	//		break;
+	//	case 0x000A: // 0xFx0A - LD V_x, Keypress
+	//		// blocks + waits for keypress
+	//		// there's a much more accurate/faithful way to do this (https://retrocomputing.stackexchange.com/questions/358/how-are-held-down-keys-handled-in-chip-8)
+	//		// but i don't feel like implementing it right now
+	//		isWaitingForInput = true;
+	//		break;
+	//	case 0x0015: // 0xFx15 - LD DelayTimer, V_x
+	//		delayTimer = registers[regX];
+	//		break;
+	//	case 0x0018: // 0xFx18 - LD SoundTimer, V_x
+	//		soundTimer = registers[regX];
+	//		break;
+	//	case 0x001E: // 0xFx1E - ADD I, V_x
+	//		indexRegister += registers[regX];
+	//		break;
+	//	case 0x0029: // 0xFx29 - LD F, V_x
+	//		// loads the location of the sprite for the number specified by V_x into I
+	//		// since every sprite is 5 bytes long, and fonts start at memory location 0x0000, we can do this
+	//		indexRegister = registers[regX] * 5;
+	//		break;
+	//	case 0x0033: // 0xFx33 - LD B, V_x
+	//		memory[indexRegister] = registers[regX] / 100;			 // 100s digit
+	//		memory[indexRegister + 1] = (registers[regX] / 10) % 10; //  10s digit
+	//		memory[indexRegister + 2] = registers[regX] % 10;		 //   1s digit
+	//		break;
+	//	case 0x0055: // 0xFx55 - LD [I], V_x
+	//		// stores registers V_0 to V_x into memory sequentially, starting at the address in [I]
+	//		// TODO: check if this is inclusive or exclusive
+	//		for (uint8_t i = 0x00; i < (regX + 1); i++)
+	//		{
+	//			memory[indexRegister + i] = registers[i];
+	//		}
+	//		break;
+	//	case 0x0065: // 0xFx65 - LD V_x, [I];
+	//		// reads into regsiters V_0 to V_x the memory values starting at address [I
+	//		// TODO: check if this is inclusive or exclusive
+	//		for (uint8_t i = 0x00; i < (regX + 1); i++)
+	//		{
+	//			registers[i] = memory[indexRegister + i];
+	//		}
+	//		break;
+	//	}
+	//	break;
+	//}
+
+	//programCounter += 2;

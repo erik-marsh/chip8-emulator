@@ -11,6 +11,7 @@ class Core
 {
 private:
 	static uint8_t fontset[80];
+	GLFWwindow* windowContext;
 
 	uint8_t registers[16];
 	uint16_t indexRegister;
@@ -29,13 +30,11 @@ private:
 	std::default_random_engine* generator;
 	std::uniform_int_distribution<int>* distribution;
 
-	GLFWwindow* windowContext;
 	Renderer* renderer;
-	olcNoiseMaker<short>* sound;
-
 	void updateFramebuffer(uint8_t xPos, uint8_t yPos, uint8_t height);
 	bool isPixelDeactivated(uint8_t oldByte, uint8_t newByte);
 
+	olcNoiseMaker<short>* sound;
 	double soundCallback(int nChannels, double deltaTime);
 
 	bool isWaitingForInput;
@@ -53,6 +52,8 @@ public:
 
 	const bool getIsWaitingForInput() const;
 
+	void log();
+	
 private:
 	typedef void (Core::* Opcode)();
 	Opcode opcodeTable[16];

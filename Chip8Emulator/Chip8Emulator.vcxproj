@@ -33,6 +33,10 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.gitattributes" />
+    <None Include="..\.gitignore" />
+    <None Include="..\CHANGELOG.md" />
+    <None Include="..\README.md" />
     <None Include="shader.frag" />
     <None Include="shader.vert" />
   </ItemGroup>
