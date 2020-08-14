@@ -55,19 +55,5 @@
     <None Include="shader.frag">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="c8_test.c8">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_opcode.ch8">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="BC_test.ch8">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="sources.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
   </ItemGroup>
 </Project>

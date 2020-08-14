@@ -33,14 +33,8 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BC_test.ch8" />
-    <None Include="c8_test.c8" />
     <None Include="shader.frag" />
     <None Include="shader.vert" />
-    <None Include="test_opcode.ch8" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="sources.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

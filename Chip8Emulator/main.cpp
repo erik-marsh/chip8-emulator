@@ -47,7 +47,7 @@ int main()
 	{
 		double currTime = glfwGetTime();
 		double deltaTime = currTime - lastFrameTime;
-		std::cout << deltaTime << std::endl;
+		//std::cout << deltaTime << std::endl;
 		processGlobalInput(window);
 		bool blocking = core.getIsWaitingForInput();
 

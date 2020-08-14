@@ -52,6 +52,64 @@ public:
 	friend void Fx0AKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	const bool getIsWaitingForInput() const;
+
+private:
+	typedef void (Core::* Opcode)();
+	Opcode opcodeTable[16];
+	Opcode subtable0[256];
+	Opcode subtable8[16];
+	Opcode subtableE[256];
+	Opcode subtableF[256];
+
+	uint16_t currOpcode;
+	uint8_t currRegX;
+	uint8_t currRegY;
+
+	void noOperation();
+
+	void opcode0();
+	void opcode00E0();
+	void opcode00EE();
+
+	void opcode1nnn();
+	void opcode2nnn();
+	void opcode3xkk();
+	void opcode4xkk();
+	void opcode5xy0();
+	void opcode6xkk();
+	void opcode7xkk();
+
+	void opcode8();
+	void opcode8xy0();
+	void opcode8xy1();
+	void opcode8xy2();
+	void opcode8xy3();
+	void opcode8xy4();
+	void opcode8xy5();
+	void opcode8xy6();
+	void opcode8xy7();
+	void opcode8xyE();
+
+	void opcode9xy0();
+	void opcodeAnnn();
+	void opcodeBnnn();
+	void opcodeCnnn();
+	void opcodeDxyn();
+
+	void opcodeE();
+	void opcodeEx9E();
+	void opcodeExA1();
+
+	void opcodeF();
+	void opcodeFx07();
+	void opcodeFx0A();
+	void opcodeFx15();
+	void opcodeFx18();
+	void opcodeFx1E();
+	void opcodeFx29();
+	void opcodeFx33();
+	void opcodeFx55();
+	void opcodeFx65();
 };
 
 // so gross but hey what can you do
