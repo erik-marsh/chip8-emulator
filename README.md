@@ -13,3 +13,7 @@ I plan on changing the sound library to OpenAL in order to remove the hard depen
   * https://github.com/corax89/chip8-test-rom
   * https://www.reddit.com/r/EmuDev/comments/8a4coz/how_do_you_test_your_emu_chip8/dwz5rap/
   * https://www.zophar.net/pdroms/chip8/chip-8-games-pack.html
+* Sound library:
+  * https://github.com/OneLoneCoder/synth
+* Graphics library:
+  * OpenGL with GLFW
